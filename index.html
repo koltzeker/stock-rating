@@ -146,7 +146,7 @@ async function yahooFetch(symbol) {
       const res = await fetch(url);
       if(!res.ok) continue;
       const raw = await res.text();
-      const data = JSON.parse(raw.startsWith("{"contents"") ? JSON.parse(raw).contents : raw);
+      const data = JSON.parse(raw.startsWith('{"contents"') ? JSON.parse(raw).contents : raw);
       const meta = data?.chart?.result?.[0]?.meta;
       if(meta?.regularMarketPrice) return meta;
     } catch(e) { continue; }
