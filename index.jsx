@@ -1,27 +1,5 @@
-<!DOCTYPE html>
-<html lang="he" dir="rtl">
-<head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>מערכת דירוג מניות</title>
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #0f1117; color: #e2e8f0; font-family: 'Segoe UI', Arial, sans-serif; }
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: #1a1f2e; }
-    ::-webkit-scrollbar-thumb { background: #374151; border-radius: 3px; }
-    input[type=number]::-webkit-inner-spin-button { opacity: 1; }
-  </style>
-</head>
-<body>
-  <div id="root"></div>
-  <script type="text/babel">
-    const { useState, useEffect } = React;
-
 // stock-rating v4-clean
+import { useState, useEffect } from "react";
 
 // ── Categories ────────────────────────────────────────────────────────────────
 const CATS = [
@@ -276,7 +254,7 @@ function MarketTicker({label, pctVal, lbl, onSet, placeholder}) {
 }
 
 // ── App ───────────────────────────────────────────────────────────────────────
-function App() {
+export default function App() {
   const [stocks,    setStocks]    = useState({});
   const [active,    setActive]    = useState(null);
   const [tab,       setTab]       = useState("summary");
@@ -827,9 +805,3 @@ function NewsForm({ticker, setStocks, inp}) {
     </div>
   );
 }
-
-
-    ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
-  </script>
-</body>
-</html>
