@@ -135,13 +135,12 @@ function extractJSON(text) {
 
 // ── Market fetch (via Claude web_search — only allowed domain) ────────────────
 async function yahooFetch(symbol) {
-  const yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=1d`;
-  const proxies = [
-    yahooUrl,
-    `https://thingproxy.freeboard.io/fetch/${yahooUrl}`,
-    `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(yahooUrl)}`,
+  // Route through /api/yahoo on Vercel to avoid CORS
+  const urls = [
+    `/api/yahoo?symbol=${encodeURIComponent(symbol)}`,
+    `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?interval=1d&range=1d`,
   ];
-  for(const url of proxies) {
+  for(const url of urls) {
     try {
       const res = await fetch(url);
       if(!res.ok) continue;
