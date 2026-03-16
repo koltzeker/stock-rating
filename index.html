@@ -179,13 +179,13 @@ async function fetchLivePrice(ticker) {
 }
 
 // ── Stock AI fetch ────────────────────────────────────────────────────────────
-async function fetchAndScoreViaAI(ticker, apiKey) {
+async function fetchAndScoreViaAI(ticker) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 55000);
   let res, data;
   try {
-    res = await fetch("https://api.anthropic.com/v1/messages", {
-      method:"POST", headers:{"Content-Type":"application/json","anthropic-dangerous-direct-browser-access":"true","x-api-key":apiKey},
+    res = await fetch("/api/chat", {
+      method:"POST", headers:{"Content-Type":"application/json"},
       signal: controller.signal,
       body: JSON.stringify({
         model:"claude-haiku-4-5-20251001", max_tokens:1000,
@@ -286,8 +286,7 @@ function App() {
   const [nqLbl,     setNqLbl]     = useState(null);
   const [mktLoading,setMktLoading]= useState(false);
   const isFileProtocol = window.location.protocol === "file:";
-  const [apiKey, setApiKey] = useState(() => localStorage.getItem("anthropic_key") || "");
-  const saveKey = (k) => { setApiKey(k); localStorage.setItem("anthropic_key", k); };
+
   const [sortBy,    setSortBy]    = useState("total");
   const [sortDir,   setSortDir]   = useState("desc");
   const [filterMin, setFilterMin] = useState("");
@@ -333,12 +332,11 @@ function App() {
   }, []);
 
   const runFetch = async (ticker) => {
-    if(!apiKey) { alert("הזן Anthropic API Key בשדה למעלה"); return; }
     setStocks(p=>({...p,[ticker]:{...p[ticker],fetchStatus:"loading",fetchError:""}}));
     try {
       // Fetch live price and AI scores in parallel
       const [r, livePrice] = await Promise.all([
-        fetchAndScoreViaAI(ticker, apiKey),
+        fetchAndScoreViaAI(ticker),
         fetchLivePrice(ticker),
       ]);
       const price = livePrice ?? r.price;
@@ -388,12 +386,6 @@ function App() {
           <span>AI Scoring</span>
           <MarketTicker label="S&P 500" pctVal={spPct} lbl={spLbl} onSet={applySP} placeholder="-1.20"/>
           <MarketTicker label="נאסדק"   pctVal={nqPct} lbl={nqLbl} onSet={applyNQ} placeholder="-2.01"/>
-          <div style={{display:"flex",alignItems:"center",gap:5}}>
-            <span style={{fontSize:"0.7rem",color:"#4a5568"}}>API Key:</span>
-            <input type="password" value={apiKey} onChange={e=>saveKey(e.target.value)}
-              placeholder="sk-ant-..."
-              style={{background:"#1e2433",border:"1px solid #374151",color:"#e2e8f0",padding:"2px 7px",borderRadius:5,fontSize:"0.7rem",width:130,outline:"none"}}/>
-          </div>
           <button onClick={refreshMarkets} disabled={mktLoading} title="רענן מדדים"
             style={{background:"#1e2433",border:"1px solid #374151",color:mktLoading?"#4a5568":"#60a5fa",
                     borderRadius:6,padding:"2px 9px",cursor:mktLoading?"default":"pointer",fontSize:"0.72rem"}}>
